@@ -1,15 +1,16 @@
 public abstract class Checker {
-	public static enum Color {
+	public static enum CheckerColor {
 		RED,
 		BLACK
-	};
-	private Color color;
+	}
 
-	public Checker(Color color) {
+	private final CheckerColor color;
+
+	public Checker(CheckerColor color) {
 		this.color = color;
 	}
 
-	public Color getColor() {
+	public CheckerColor getColor() {
 		return this.color;
-	};
+	}
 }
