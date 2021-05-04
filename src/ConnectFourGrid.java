@@ -56,18 +56,10 @@ public class ConnectFourGrid {
 	 *  Alternatively, you can write a gameTied method that is called AFTER checkGameOver...
 	 */
 	private boolean checkGameOver(Location loc) {
-		return fourVerts(loc);
+		return fourVerts(loc) || fourHorz(loc);
 	}
 
-	/**
-	 * Checks to see if there are four checkers in a row that match each other starting 
-	 * with loc and going to the South (because loc was the last checker played).  What is the
-	 * maximum value of loc.getRow() such that you don't need to even check the places below?
-	 * @param loc The Location of the latest Checker added to the Grid
-	 * @return true if loc is the top of a four-in-row (all the same color)
-	 */
 	private boolean fourVerts(Location loc) {
-		System.out.println("CHECKING VERTS");
 		int row = loc.getRow();
 		int col = loc.getCol();
 
@@ -84,9 +76,50 @@ public class ConnectFourGrid {
 		return true;
 	}
 
+	private boolean fourHorz(Location loc) {
+		Checker[] row = grid[loc.getRow()];
+		Checker curr = row[loc.getCol()];
+		boolean goRight = true;
+		boolean goLeft = true;
+		int i = 1;
+		int amount = 1;
 
-	/** Finds the lowest empty Location in the specified column or null if the column is full
-	 *  The "lowest" column is the column with the largest row (or furthest South)
+		while (goRight || goLeft) {
+			if (goRight) {
+				int right = loc.getCol() + i;
+				if (right >= row.length) goRight = false;
+				else {
+					Checker r = row[right];
+					if (r == null || r.getColor() != curr.getColor()) {
+						goRight = false;
+					} else {
+						amount++;
+					}
+				}
+			}
+
+			if (goLeft) {
+				int left = loc.getCol() - i;
+				if (left < 0) goLeft = false;
+				else {
+					Checker l = row[left];
+					if (l == null || l.getColor() != curr.getColor()) {
+						goLeft = false;
+					} else {
+						amount++;
+					}
+				}
+			}
+			i++;
+		}
+
+		return amount >= 4;
+	}
+
+	/**
+	 * Finds the lowest empty Location in the specified column or null if the column is full
+	 * The "lowest" column is the column with the largest row (or furthest South)
+	 *
 	 * @param col Column to scan
 	 * @return Location that is lowest in the column or null if the column is full
 	 */
