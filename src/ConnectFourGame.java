@@ -7,11 +7,18 @@ public class ConnectFourGame {
     private final ConnectFourGrid grid = new ConnectFourGrid();
     private final JFrame frame = new JFrame("Connect Four");
 
-    private boolean isGameOver = false;
     private boolean isFirstPlayer = true;
-    private final int[] turns = new int[2];
+    private int[] turns = new int[2];
     private final int[] wins = new int[2];
     private String display = null;
+
+    // Game Over variables
+    private boolean isGameOver = false;
+    private static final int GAME_OVER_WIDTH = 200;
+    private static final int GAME_OVER_HEIGHT = 50;
+    private int gameOverX;
+    private int gameOverY;
+
 
     public static void main(String[] args) {
         new ConnectFourGame().start();
@@ -55,10 +62,23 @@ public class ConnectFourGame {
         if (!isGameOver && x > 0 && x < totalWidth && y > 0 && y < totalHeight) {
             grid.colClicked(x / ConnectFourGrid.SQ);
         }
+        else if (isGameOver && x > gameOverX && x < gameOverX + GAME_OVER_WIDTH && y > gameOverY && y < gameOverY + GAME_OVER_HEIGHT) {
+            newGame();
+        }
+    }
+
+    protected void newGame() {
+        this.isGameOver = false;
+        this.display = null;
+        this.turns = new int[2];
+        grid.reset();
+        frame.repaint();
     }
 
     protected void drawGameInfo(Graphics g) {
-        g.setFont(new Font("TimesRoman", Font.BOLD, 20));
+        Font boldFont = new Font("TimesRoman", Font.BOLD, 20);
+        Font plainFont = new Font("TimesRoman", Font.PLAIN, 20);
+        g.setFont(boldFont);
 
         int xVal = ConnectFourGrid.SQ * (ConnectFourGrid.GRID_WIDTH + 1);
         int yVal = ConnectFourGrid.SQ;
@@ -72,12 +92,32 @@ public class ConnectFourGame {
         g.setColor(Color.BLACK);
         g.drawString((isFirstPlayer ? "Black" : "Red") + "'s Turn", xVal, yVal);
 
-        g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+        g.setFont(plainFont);
         yVal += ConnectFourGrid.SQ;
         g.drawString("Total checkers played: " + (turns[0] + turns[1]), xVal, yVal);
 
         yVal += ConnectFourGrid.SQ;
         g.drawString("Black wins: " + wins[0] + ", Red wins: " + wins[1], xVal, yVal);
+
+        if(isGameOver) {
+            String text = "New Game";
+            yVal += ConnectFourGrid.SQ;
+
+            g.setFont(boldFont);
+            FontMetrics metrics = g.getFontMetrics(boldFont);
+
+            gameOverX = xVal;
+            gameOverY = yVal;
+
+            int x = xVal + (GAME_OVER_WIDTH - metrics.stringWidth(text)) / 2;
+            int y = yVal + ((GAME_OVER_HEIGHT - metrics.getHeight()) / 2) + metrics.getAscent();
+
+            g.drawRect(xVal, yVal, GAME_OVER_WIDTH, GAME_OVER_HEIGHT);
+            g.setColor(Color.GREEN);
+            g.fillRect(xVal, yVal, GAME_OVER_WIDTH, GAME_OVER_HEIGHT);
+            g.setColor(Color.BLACK);
+            g.drawString("New Game", x, y);
+        }
     }
 
     public void setDisplay(String d) {
@@ -85,6 +125,7 @@ public class ConnectFourGame {
     }
 
     public void nextTurn() {
+        this.display = null;
         this.turns[isFirstPlayer ? 0 : 1]++;
         this.isFirstPlayer = !this.isFirstPlayer;
         frame.repaint();
@@ -106,5 +147,9 @@ public class ConnectFourGame {
 
     public boolean getGameOver() {
         return this.isGameOver;
+    }
+
+    public void repaint() {
+        frame.repaint();
     }
 }

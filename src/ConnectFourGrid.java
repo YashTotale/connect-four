@@ -6,33 +6,14 @@ public class ConnectFourGrid {
 	public static final int GRID_HEIGHT = 6;
 	public static final int SQ = 60;
 
-	private final Checker[][] grid = new Checker[GRID_HEIGHT][GRID_WIDTH];
+	private Checker[][] grid = new Checker[GRID_HEIGHT][GRID_WIDTH];
 
-	/**
-	 * This method is called when a column is clicked. It processes the click in the following order.  
-	 * 1.  The column is  checked to see if it is full.  
-	 * If it is full, then the click is ignored.
-	 * If not full, then the correct color checker is placed in the lowest 
-	 * row possible (biggest row number) in that column.  
-	 *
-	 * If a checker was placed, then we need to check to see if there is 
-	 * four in a row. I recommend checking to see if there is a four
-	 * in a row vertically from the latest checker placed, then four in a row horizontally
-	 * then four in a row along each diagonal from the latest checker location.  I have 
-	 * created one function below called fourVerts which is intended to return true if the latest 
-	 * checker is part of four in a row, vertically.  I recommend making 3 other methods, at least.
-	 *
-	 * If the game is not over, then the turn is switched so that the next click will 
-	 * place a checker of the opposite color.  If the game is over, then a message is 
-	 * displayed and the game should reset on the next click.
-	 * 
-	 * @param col The column that the user clicked
-	 */
 	protected void colClicked(int col) {
 		Location loc = lowestEmptyLoc(col);
 
 		if (loc == null) {
 			sharedGame.setDisplay("Column " + (col + 1) + " is full!");
+			sharedGame.repaint();
 			return;
 		}
 
@@ -41,11 +22,7 @@ public class ConnectFourGrid {
 
 		if (!sharedGame.getGameOver()) sharedGame.nextTurn();
 	}
-	
-	// prints the board contents in the console and prints who won
-	private void displayStateInConsole() {
 
-	}
 	/**
 	 * This method checks to see if the game is over.  It checks to see if the game has been 
 	 * won by either player.  More advanced groups should consider how to determine if the 
@@ -68,7 +45,6 @@ public class ConnectFourGrid {
 		if (grid.length - row <= 3) return false;
 
 		for (int r = loc.getRow() + 1; r < loc.getRow() + 4; r++) {
-			System.out.println(r);
 			Checker checker = grid[r][col];
 			if (!checker.getColor().equals(curr.getColor())) return false;
 		}
@@ -116,13 +92,6 @@ public class ConnectFourGrid {
 		return amount >= 4;
 	}
 
-	/**
-	 * Finds the lowest empty Location in the specified column or null if the column is full
-	 * The "lowest" column is the column with the largest row (or furthest South)
-	 *
-	 * @param col Column to scan
-	 * @return Location that is lowest in the column or null if the column is full
-	 */
 	private Location lowestEmptyLoc(int col) {
 		for (int row = grid.length - 1; row >= 0; row--) {
 			Checker checker = grid[row][col];
@@ -131,21 +100,6 @@ public class ConnectFourGrid {
 
 		return null;
 	}
-
-	/**
-	 * This method will be called when it is time to start a new game.
-	 */
-	private void clearBoard() {
-		
-		
-	}
-
-	public String toString(){
-		String s = "";
-
-		return s;
-	}
-
 
 	public void draw(Graphics g) {
 		g.setColor(Color.YELLOW);
@@ -179,5 +133,9 @@ public class ConnectFourGrid {
 
 	public static void setGame(ConnectFourGame game) {
 		sharedGame = game;
+	}
+
+	public void reset() {
+		this.grid = new Checker[GRID_HEIGHT][GRID_WIDTH];
 	}
 }
