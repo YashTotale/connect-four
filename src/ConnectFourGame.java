@@ -9,16 +9,20 @@ public class ConnectFourGame {
 
     private boolean isFirstPlayer = true;
     private int[] turns = new int[2];
-    private final int[] wins = new int[2];
+    private final int[] wins = new int[3];
     private String display = null;
 
     // Game Over variables
-    private boolean isGameOver = false;
+    public enum GameOver {
+        BLACK,
+        RED,
+        TIED
+    }
+    private GameOver isGameOver;
     private static final int GAME_OVER_WIDTH = 200;
     private static final int GAME_OVER_HEIGHT = 50;
     private int gameOverX;
     private int gameOverY;
-
 
     public static void main(String[] args) {
         new ConnectFourGame().start();
@@ -59,16 +63,16 @@ public class ConnectFourGame {
         int totalWidth = ConnectFourGrid.SQ * ConnectFourGrid.GRID_WIDTH;
         int totalHeight = ConnectFourGrid.SQ * ConnectFourGrid.GRID_HEIGHT;
 
-        if (!isGameOver && x > 0 && x < totalWidth && y > 0 && y < totalHeight) {
+        if (isGameOver == null && x > 0 && x < totalWidth && y > 0 && y < totalHeight) {
             grid.colClicked(x / ConnectFourGrid.SQ);
         }
-        else if (isGameOver && x > gameOverX && x < gameOverX + GAME_OVER_WIDTH && y > gameOverY && y < gameOverY + GAME_OVER_HEIGHT) {
+        else if (isGameOver != null && x > gameOverX && x < gameOverX + GAME_OVER_WIDTH && y > gameOverY && y < gameOverY + GAME_OVER_HEIGHT) {
             newGame();
         }
     }
 
     protected void newGame() {
-        this.isGameOver = false;
+        this.isGameOver = null;
         this.display = null;
         this.turns = new int[2];
         grid.reset();
@@ -97,9 +101,9 @@ public class ConnectFourGame {
         g.drawString("Total checkers played: " + (turns[0] + turns[1]), xVal, yVal);
 
         yVal += ConnectFourGrid.SQ;
-        g.drawString("Black wins: " + wins[0] + ", Red wins: " + wins[1], xVal, yVal);
+        g.drawString("Black wins: " + wins[0] + ", Red wins: " + wins[1] + ", Ties: " + wins[2], xVal, yVal);
 
-        if(isGameOver) {
+        if(isGameOver != null) {
             String text = "New Game";
             yVal += ConnectFourGrid.SQ;
 
@@ -131,12 +135,23 @@ public class ConnectFourGame {
         frame.repaint();
     }
 
-    public void setGameOver(boolean gameOver) {
+    public void setGameOver(GameOver gameOver) {
         this.isGameOver = gameOver;
 
-        if(this.isGameOver) {
-            this.display = (isFirstPlayer ? "Black" : "Red") + " Wins!";
-            this.wins[isFirstPlayer ? 0 : 1]++;
+        if(this.isGameOver != null) {
+            this.turns[isFirstPlayer ? 0 : 1]++;
+
+            if(this.isGameOver.equals(GameOver.TIED)) {
+                this.display = "Tie!";
+                this.wins[2]++;
+            } else if(this.isGameOver.equals(GameOver.BLACK)) {
+                this.display = "Black Wins!";
+                this.wins[0]++;
+            } else {
+                this.display = "Red Wins!";
+                this.wins[1]++;
+            }
+
             frame.repaint();
         }
     }
@@ -145,11 +160,15 @@ public class ConnectFourGame {
         return this.isFirstPlayer;
     }
 
-    public boolean getGameOver() {
+    public GameOver getGameOver() {
         return this.isGameOver;
     }
 
     public void repaint() {
         frame.repaint();
+    }
+
+    public int[] getTurns() {
+        return this.turns;
     }
 }

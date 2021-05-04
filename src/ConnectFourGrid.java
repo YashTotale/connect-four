@@ -20,20 +20,30 @@ public class ConnectFourGrid {
 		grid[loc.getRow()][loc.getCol()] = sharedGame.getFirstPlayer() ? new BlackChecker() : new RedChecker();
 		sharedGame.setGameOver(checkGameOver(loc));
 
-		if (!sharedGame.getGameOver()) sharedGame.nextTurn();
+		if (sharedGame.getGameOver() == null) sharedGame.nextTurn();
 	}
 
 	/**
-	 * This method checks to see if the game is over.  It checks to see if the game has been 
-	 * won by either player.  More advanced groups should consider how to determine if the 
+	 * This method checks to see if the game is over.  It checks to see if the game has been
+	 * won by either player.  More advanced groups should consider how to determine if the
 	 * game can't be won (tie game)
+	 *
 	 * @param loc This is the latest Location where a Checker was added.
 	 * @return This returns true if the game is over.  More advanced groups may change this
-	 *  to return an int, where 0 means keep going , 1 means latest player won, 2 means tie game
-	 *  Alternatively, you can write a gameTied method that is called AFTER checkGameOver...
+	 * to return an int, where 0 means keep going , 1 means latest player won, 2 means tie game
+	 * Alternatively, you can write a gameTied method that is called AFTER checkGameOver...
 	 */
-	private boolean checkGameOver(Location loc) {
-		return fourVerts(loc) || fourHorz(loc);
+	private ConnectFourGame.GameOver checkGameOver(Location loc) {
+		boolean win = fourVerts(loc) || fourHorz(loc);
+		boolean tied = checkTied();
+
+		return win ?
+				sharedGame.getFirstPlayer()
+						? ConnectFourGame.GameOver.BLACK
+						: ConnectFourGame.GameOver.RED
+				: tied
+					? ConnectFourGame.GameOver.TIED
+					: null;
 	}
 
 	private boolean fourVerts(Location loc) {
@@ -90,6 +100,16 @@ public class ConnectFourGrid {
 		}
 
 		return amount >= 4;
+	}
+
+	private boolean checkTied() {
+		int[] turns = sharedGame.getTurns();
+		int totalTurns = turns[0] + turns[1];
+
+		if(totalTurns + 1 >= GRID_WIDTH * GRID_HEIGHT) {
+			return true;
+		}
+		return false;
 	}
 
 	private Location lowestEmptyLoc(int col) {
