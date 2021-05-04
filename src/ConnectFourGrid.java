@@ -23,18 +23,8 @@ public class ConnectFourGrid {
 		if (sharedGame.getGameOver() == null) sharedGame.nextTurn();
 	}
 
-	/**
-	 * This method checks to see if the game is over.  It checks to see if the game has been
-	 * won by either player.  More advanced groups should consider how to determine if the
-	 * game can't be won (tie game)
-	 *
-	 * @param loc This is the latest Location where a Checker was added.
-	 * @return This returns true if the game is over.  More advanced groups may change this
-	 * to return an int, where 0 means keep going , 1 means latest player won, 2 means tie game
-	 * Alternatively, you can write a gameTied method that is called AFTER checkGameOver...
-	 */
 	private ConnectFourGame.GameOver checkGameOver(Location loc) {
-		boolean win = fourVerts(loc) || fourHorz(loc);
+		boolean win = fourVerts(loc) || fourHorz(loc) || fourDiag(loc);
 		boolean tied = checkTied();
 
 		return win ?
@@ -42,8 +32,8 @@ public class ConnectFourGrid {
 						? ConnectFourGame.GameOver.BLACK
 						: ConnectFourGame.GameOver.RED
 				: tied
-					? ConnectFourGame.GameOver.TIED
-					: null;
+						? ConnectFourGame.GameOver.TIED
+						: null;
 	}
 
 	private boolean fourVerts(Location loc) {
@@ -65,6 +55,8 @@ public class ConnectFourGrid {
 	private boolean fourHorz(Location loc) {
 		Checker[] row = grid[loc.getRow()];
 		Checker curr = row[loc.getCol()];
+		Checker.CheckerColor color = curr.getColor();
+
 		boolean goRight = true;
 		boolean goLeft = true;
 		int i = 1;
@@ -76,7 +68,7 @@ public class ConnectFourGrid {
 				if (right >= row.length) goRight = false;
 				else {
 					Checker r = row[right];
-					if (r == null || r.getColor() != curr.getColor()) {
+					if (r == null || !r.getColor().equals(color)) {
 						goRight = false;
 					} else {
 						amount++;
@@ -89,7 +81,7 @@ public class ConnectFourGrid {
 				if (left < 0) goLeft = false;
 				else {
 					Checker l = row[left];
-					if (l == null || l.getColor() != curr.getColor()) {
+					if (l == null || !l.getColor().equals(color)) {
 						goLeft = false;
 					} else {
 						amount++;
@@ -102,14 +94,57 @@ public class ConnectFourGrid {
 		return amount >= 4;
 	}
 
+	private boolean fourDiag(Location loc) {
+		int row = loc.getRow();
+		int col = loc.getCol();
+		Checker curr = grid[row][col];
+		Checker.CheckerColor color = curr.getColor();
+
+		for(int x = 0; x < 2; x++) {
+			int i = 1;
+			int amount = 1;
+			boolean goUp = true;
+			boolean goDown = true;
+
+			while(goUp || goDown) {
+				if(goUp) {
+					int r = row + i;
+					int c = col + (x == 0 ? 1 : -1) * i;
+
+					if(!inbounds(r, c)) goUp = false;
+					else {
+						Checker checker = grid[r][c];
+						if(checker == null || !checker.getColor().equals(color)) goUp = false;
+						else amount++;
+					}
+				}
+
+				if(goDown) {
+					int r = row - i;
+					int c = col - (x == 0 ? 1 : -1) * i;
+
+					if(!inbounds(r, c)) goDown = false;
+					else {
+						Checker checker = grid[r][c];
+						if(checker == null || !checker.getColor().equals(color)) goDown = false;
+						else amount++;
+					}
+				}
+
+				i++;
+			}
+
+			if(amount >= 4) return true;
+		}
+
+		return false;
+	}
+
 	private boolean checkTied() {
 		int[] turns = sharedGame.getTurns();
 		int totalTurns = turns[0] + turns[1];
 
-		if(totalTurns + 1 >= GRID_WIDTH * GRID_HEIGHT) {
-			return true;
-		}
-		return false;
+		return totalTurns + 1 >= GRID_WIDTH * GRID_HEIGHT;
 	}
 
 	private Location lowestEmptyLoc(int col) {
@@ -157,5 +192,9 @@ public class ConnectFourGrid {
 
 	public void reset() {
 		this.grid = new Checker[GRID_HEIGHT][GRID_WIDTH];
+	}
+
+	public boolean inbounds(int r, int c) {
+		return r > 0 && r < grid.length && c > 0 && c < grid[r].length;
 	}
 }
