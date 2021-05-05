@@ -17,7 +17,7 @@ public class ConnectFourGrid {
 			return;
 		}
 
-		grid[loc.getRow()][loc.getCol()] = sharedGame.getFirstPlayer() ? new BlackChecker() : new RedChecker();
+		grid[loc.getRow()][loc.getCol()] = sharedGame.getIsHumanPlayer() ? new BlackChecker() : new RedChecker();
 		sharedGame.setGameOver(checkGameOver(loc));
 
 		if (sharedGame.getGameOver() == null) sharedGame.nextTurn();
@@ -28,7 +28,7 @@ public class ConnectFourGrid {
 		boolean tied = checkTied();
 
 		return win ?
-				sharedGame.getFirstPlayer()
+				sharedGame.getIsHumanPlayer()
 						? ConnectFourGame.GameOver.BLACK
 						: ConnectFourGame.GameOver.RED
 				: tied
@@ -147,7 +147,7 @@ public class ConnectFourGrid {
 		return totalTurns + 1 >= GRID_WIDTH * GRID_HEIGHT;
 	}
 
-	private Location lowestEmptyLoc(int col) {
+	public Location lowestEmptyLoc(int col) {
 		for (int row = grid.length - 1; row >= 0; row--) {
 			Checker checker = grid[row][col];
 			if (checker == null) return new Location(row, col);
@@ -157,13 +157,13 @@ public class ConnectFourGrid {
 	}
 
 	public void draw(Graphics g) {
-		g.setColor(Color.YELLOW);
-		g.fillRect(0, 0, SQ * grid[0].length, SQ * grid.length);
+    g.setColor(Color.YELLOW);
+		g.fillRect(ConnectFourGame.PADDING_LEFT, ConnectFourGame.PADDING_TOP, SQ * grid[0].length, SQ * grid.length);
 
 		for(int r = 0; r < grid.length; r++) {
 			for(int c = 0; c < grid[r].length; c++) {
-				int yVal = r * SQ;
-				int xVal = c * SQ;
+				int yVal = ConnectFourGame.PADDING_TOP + r * SQ;
+				int xVal = ConnectFourGame.PADDING_LEFT + c * SQ;
 				Checker curr = grid[r][c];
 
 				g.setColor(Color.BLACK);

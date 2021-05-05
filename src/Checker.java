@@ -1,5 +1,5 @@
 public abstract class Checker {
-	public static enum CheckerColor {
+	public enum CheckerColor {
 		RED,
 		BLACK
 	}
