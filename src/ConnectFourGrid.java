@@ -108,8 +108,8 @@ public class ConnectFourGrid {
 
 			while(goUp || goDown) {
 				if(goUp) {
-					int r = row + i;
-					int c = col + (x == 0 ? 1 : -1) * i;
+					int r = row - i;
+					int c = col + ((x == 0 ? 1 : -1) * i);
 
 					if(!inbounds(r, c)) goUp = false;
 					else {
@@ -120,7 +120,7 @@ public class ConnectFourGrid {
 				}
 
 				if(goDown) {
-					int r = row - i;
+					int r = row + i;
 					int c = col - (x == 0 ? 1 : -1) * i;
 
 					if(!inbounds(r, c)) goDown = false;
@@ -195,6 +195,6 @@ public class ConnectFourGrid {
 	}
 
 	public boolean inbounds(int r, int c) {
-		return r > 0 && r < grid.length && c > 0 && c < grid[r].length;
+		return r >= 0 && r < grid.length && c >= 0 && c < grid[r].length;
 	}
 }
