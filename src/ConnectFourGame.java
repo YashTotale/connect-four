@@ -70,9 +70,15 @@ public class ConnectFourGame {
 
     private void setUpDifficultyButtons(JPanel panel) {
       JLabel label = new JLabel("Choose a difficulty");
+
       JRadioButton easy = new JRadioButton("Easy", difficulty.equals(AI.Difficulty.EASY));
+      easy.addActionListener(e -> changeDifficulty(AI.Difficulty.EASY));
+
       JRadioButton medium = new JRadioButton("Medium", difficulty.equals(AI.Difficulty.MEDIUM));
+      medium.addActionListener(e -> changeDifficulty(AI.Difficulty.MEDIUM));
+
       JRadioButton hard = new JRadioButton("Hard", difficulty.equals(AI.Difficulty.HARD));
+      hard.addActionListener(e -> changeDifficulty(AI.Difficulty.HARD));
 
       ButtonGroup difficulties = new ButtonGroup();
       difficulties.add(easy);
@@ -83,6 +89,12 @@ public class ConnectFourGame {
       panel.add(easy);
       panel.add(medium);
       panel.add(hard);
+    }
+
+    private void changeDifficulty(AI.Difficulty difficulty) {
+        this.difficulty = difficulty;
+        this.ai = new AI(difficulty);
+        this.newGame();
     }
 
     protected void clickedAt(MouseEvent me) {
@@ -109,6 +121,7 @@ public class ConnectFourGame {
         this.isGameOver = null;
         this.display = null;
         this.turns = new int[2];
+        this.isHumanPlayer = true;
         grid.reset();
         frame.repaint();
     }
@@ -173,7 +186,6 @@ public class ConnectFourGame {
 
         if(this.isGameOver != null) {
             this.turns[isHumanPlayer ? 0 : 1]++;
-            this.isHumanPlayer = true;
 
             if(this.isGameOver.equals(GameOver.TIED)) {
                 this.display = "Tie!";

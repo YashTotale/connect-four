@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.ArrayList;
 
 public class ConnectFourGrid {
 	private static ConnectFourGame sharedGame;
@@ -186,10 +187,6 @@ public class ConnectFourGrid {
 		}
 	}
 
-	public static void setGame(ConnectFourGame game) {
-		sharedGame = game;
-	}
-
 	public void reset() {
 		this.grid = new Checker[GRID_HEIGHT][GRID_WIDTH];
 	}
@@ -197,4 +194,17 @@ public class ConnectFourGrid {
 	public boolean inbounds(int r, int c) {
 		return r >= 0 && r < grid.length && c >= 0 && c < grid[r].length;
 	}
+
+  public static void setGame(ConnectFourGame game) {
+    sharedGame = game;
+  }
+
+  public ArrayList<Integer> getAvailableCols() {
+	  ArrayList<Integer> available = new ArrayList<>();
+	  for(int i = 0; i < grid[0].length; i++) {
+	    boolean isAvailable = lowestEmptyLoc(i) != null;
+	    if(isAvailable) available.add(i);
+    }
+	  return available;
+  }
 }

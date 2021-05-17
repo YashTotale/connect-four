@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class AI {
   private static ConnectFourGame sharedGame;
   private static ConnectFourGrid sharedGrid;
@@ -18,17 +20,27 @@ public class AI {
       case EASY: {
         moveEasy();
       }
+      case MEDIUM: {
+        moveMedium();
+      }
+      case HARD: {
+        moveHard();
+      }
     }
   }
 
   private void moveEasy() {
-    while(true) {
-      int col = (int) (Math.random() * ConnectFourGrid.GRID_WIDTH);
-      if(sharedGrid.lowestEmptyLoc(col) != null) {
-        sharedGrid.colClicked(col);
-        break;
-      }
-    }
+    ArrayList<Integer> available = sharedGrid.getAvailableCols();
+    int index = (int) (Math.random() * available.size());
+    sharedGrid.colClicked(available.get(index));
+  }
+
+  private void moveMedium() {
+
+  }
+
+  private void moveHard() {
+
   }
 
   public static void setGame(ConnectFourGame game) {
